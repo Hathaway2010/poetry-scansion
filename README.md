@@ -4,7 +4,7 @@
 
 This Django (Python) web app uses a SQLite database and a plain JavaScript front end. It allows students of metrical poetry to practice scansion on pre-scanned poems and, when their scansions prove reliable enough, to help train the app to scan poems by correcting its automatic scansions. This app in its current form was a final project for Harvard's CS50W MOOC, and it is one component of what I hope will become a larger suite of poetry-analysis and learning tools.
 
-The app is not running anywhere online, but I hope to change that soon.
+The app can be accessed at poetry-scansion.hathaway2010.repl.co
 
 ## How to Use
 
