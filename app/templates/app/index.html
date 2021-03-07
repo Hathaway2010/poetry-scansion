@@ -1,0 +1,29 @@
+{% extends 'app/layout.html' %}
+{% load static %}
+
+
+{% block body %}
+    <div class="container">
+        {% csrf_token %}
+        <div id="poem-to-scan"></div>
+        <div id="original">
+            <div id="original-poem">
+                <p id="poem-id">{{ poem.pk }}</p>
+                <h3>{{ poem.title }}</h3>
+                <p>{{ poem.poet }}</p>
+                {% if poem.human_scanned %}
+                    <p id="scanned-by">This poem has been scanned by a human</p>
+                {% else %}
+                    <p id="scanned-by">This poem has been scanned by a computer</p>
+                {% endif %}
+                <pre id="poem-text" class="item">{{ poem.poem }}</pre>
+            </div>
+            <pre id="scansion-text" class="item">{{ poem.scansion }}</pre>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'app/scansion.js' %}">
+    </script>
+{% endblock %}
