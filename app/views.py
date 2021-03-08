@@ -130,7 +130,7 @@ def import_poem(request):
                 item.poet = poet
                 item.title = title
                 item.scansion = scansion
-                poem.save()
+                item.save()
         # otherwise, save new poem
         else:
             p = Poem(title=title, poem=poem, poet=poet, scansion=scansion, human_scanned=human_scanned)
