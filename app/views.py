@@ -121,7 +121,7 @@ def import_poem(request):
         poem = request.POST["poem"]
         poet = request.POST["poet"]
         human_scanned = False
-        scansion = scan.scan(poem)
+        scansion = scan.house_robber_scan(poem)
         # if poem already in database, overwrite it
         p = Poem.objects.filter(poem=poem)
         if p.exists():
