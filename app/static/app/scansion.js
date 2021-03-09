@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // get poem and scansion from the HTML
   const poem = document.querySelector('#poem-text').textContent
-  const scansion = document.querySelector('#scansion-text').textContent
+  const scansion = document.querySelector('.scansion-text').textContent
   // return to normal size if something outside a word is clicked on, make the word if it or its controls are clicked on
   document.querySelector('.container').addEventListener('click', (event) => {
     grow(event.target);

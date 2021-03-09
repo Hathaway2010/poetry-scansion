@@ -17,3 +17,14 @@ class Poem(models.Model):
     scansion = models.TextField()
     human_scanned = models.BooleanField(default=False)
     poet = models.TextField()
+
+class Algorithm(models.Model):
+    name = models.TextField()
+    about = models.TextField()
+    function_name = models.TextField()
+    preferred = models.BooleanField(default=False)
+
+class PoemScansion(models.Model):
+    poem = models.ForeignKey(Poem, on_delete=models.CASCADE)
+    scansion = models.TextField()
+    type = models.ForeignKey(Algorithm, on_delete=models.CASCADE)

@@ -1,5 +1,5 @@
 import re
-from .models import Pronunciation, Poem
+from .models import Pronunciation
 from copy import copy
 
 newline = re.compile("\r\n|\n|\r")
@@ -82,7 +82,7 @@ def poem_stats(poem):
         stress_list.append(line_list)
     return stress_list
 
-def basic_scan(poem):
+def original_scan(poem):
     # get stress ratio for each syllble in each word, separated by spaces,
     # and organized into lines
     stress_list = poem_stats(poem)

@@ -76,7 +76,7 @@ span {
   box-shadow: 1px 1px 5px black;
   padding: 30px;
 }
-#id, #scansion-text {
+#id, .scansion-text {
   display: none;
 }
 
