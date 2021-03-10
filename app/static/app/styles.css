@@ -16,6 +16,16 @@
   font-family: sans-serif;
   font-size: 20px;
 }
+
+#human-scanned li, #computer-scanned li {
+  padding: 5px;
+}
+
+#human-scanned button, #computer-scanned button {
+  padding: 7px;
+  margin-left: 15px;
+  margin-right: 10px;
+}
 #small-screen {
   display: none;
 }
@@ -103,6 +113,10 @@ span {
   background-color: #380a02;
   color: lemonchiffon;
   cursor: default;
+}
+.autosymbol {
+  padding: 3px;
+  font-family: monospace;
 }
 
 a {

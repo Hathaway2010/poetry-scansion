@@ -21,9 +21,7 @@
             </div>
             <pre class="scansion-text item">
                 {% for scansion in scansions %}
-                    <div id="{{ scansion.type.function_name }}">
-                        {{ scansion.scansion }}
-                    </div>
+                    <div id="{{ scansion.type.function_name }}">{{ scansion.scansion }}</div>
                 {% endfor %}
             </pre>
         </div>

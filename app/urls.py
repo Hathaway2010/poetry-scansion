@@ -11,5 +11,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("import_poem", views.import_poem, name="import_poem"),
     path("about", views.about, name="about"),
-    path("choose_poem", views.choose_poem, name="choose_poem")
+    path("choose_poem", views.choose_poem, name="choose_poem"),
+    path("automated", views.automated, name="automated"),
+    path("automated/<int:id>", views.automated, name="automated")
 ]

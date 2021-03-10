@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
   // get poem and scansion from the HTML
   const poem = document.querySelector('#poem-text').textContent
@@ -182,9 +181,9 @@ function submitScansion() {
   // get every table containing a line of poetry
   const lines = document.querySelectorAll('table');
   // get the original poem's scansion from hidden div in html and split it into lines
-  const oldScansion = document.querySelector('#scansion-text').textContent.split(/\r\n|\n|\r/);
+  const oldScansion = document.querySelector('.scansion-text').textContent.split(/\r\n|\n|\r/);
   // get word count for scoring later
-  let wordCount = document.querySelector('#scansion-text').textContent.split(' ').length;
+  let wordCount = document.querySelector('.scansion-text').textContent.split(' ').length;
   // disable submit button so user can't get points by submitting already-corrected work
   document.querySelector('#submit-scansion').disabled = true;
   // create empty string for stress pattern and counter for differences

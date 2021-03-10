@@ -152,31 +152,16 @@ def poem(request, id):
     poem = Poem.objects.get(pk=id)
     return render(request, "app/index.html", {"poem": poem })
 
-def automated(request):
+def automated(request, id=''):
     if request.method == "PUT":
         pass
     else:
-        poem = Poem.objects.all().order_by("?").first()
+        if id:
+            poem = Poem.objects.get(pk=id)
+        else:
+            poem = Poem.objects.all().order_by("?").first()
+        algorithms = Algorithm.objects.all().order_by("-preferred")
         if not PoemScansion.objects.filter(poem=poem).exists():
-            algorithms = Algorithm.objects.all().order_by("-preferred")
-            for algorithm in algorithms:
-                s = PoemScansion(poem=poem,
-                                 scansion=SCANS[algorithm.function_name](poem.poem),
-                                 type=algorithm)
-                s.save()
-        scansions = PoemScansion.objects.filter(poem=poem)
-        return render(request, "app/automated.html", {
-        "poem": poem, "scansions": scansions, "algorithms": algorithms
-        })
-
-def automated_poem(request, id):
-    if request.method == "PUT":
-        pass
-    else:
-        preferred = Algorithm.objects.get(preferred=True)
-        poem = Poem.objects.get(pk=id)
-        if not PoemScansion.objects.filter(poem=poem).exists():
-            algorithms = Algorithm.objects.all().order_by("-preferred")
             for algorithm in algorithms:
                 s = PoemScansion(poem=poem,
                                  scansion=SCANS[algorithm.function_name](poem.poem),
