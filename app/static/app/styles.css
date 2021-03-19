@@ -1,0 +1,226 @@
+#login, #register {
+  margin-left: 25%;
+}
+
+#username, #email, #password, #confirmation, #submit {
+  display: block;
+  width: 50%;
+  font-size: 20px;
+}
+#about {
+  font-family: "IM Fell English", serif;
+  width: 60%;
+  margin: auto;
+}
+#about p, #about li {
+  font-family: sans-serif;
+  font-size: 20px;
+}
+
+#human-scanned li, #computer-scanned li {
+  padding: 5px;
+}
+
+#human-scanned button, #computer-scanned button {
+  padding: 7px;
+  margin-left: 15px;
+  margin-right: 10px;
+}
+#small-screen {
+  display: none;
+}
+
+button {
+  padding: 15px;
+  color: black;
+  border: none;
+  background-color: white;
+  box-shadow: 1px 1px 5px black;
+}
+/*  */
+.pm {
+  padding: 7px;
+}
+
+button:hover {
+  font-weight: bold;
+  background-color: #380a02;
+  color: lemonchiffon;
+}
+
+textarea {
+  width: 95%;
+  height: 40%;
+  margin: 20px;
+}
+body {
+  background-color: lemonchiffon;
+  font-family: "IM Fell English"
+}
+.container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+table {
+  padding: 10px;
+  font-family: sans-serif;
+}
+
+.empty {
+  background-color: #380a02;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+span {
+  font-size: 20px;
+  font-family: sans-serif;
+  text-align: center;
+}
+#original-poem {
+  font-size: 20px;
+  background-color: white;
+  box-shadow: 1px 1px 5px black;
+  padding: 30px;
+}
+#id, .scansion-text {
+  display: none;
+}
+
+#poem-to-scan {
+  border: 30px solid #380a02;
+  box-shadow: 1px 1px 5px black;
+}
+.word {
+  text-align: center;
+}
+.scansion {
+  text-align: center;
+}
+.pmc {
+  text-align: center;
+}
+
+.symbol {
+  padding: 3px;
+  font-family: monospace;
+}
+
+.symbol:hover {
+  background-color: #380a02;
+  color: lemonchiffon;
+  cursor: default;
+}
+.autosymbol {
+  padding: 3px;
+  font-family: monospace;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  font-family: sans-serif;
+}
+a:hover {
+  color: #380a02;
+  font-weight: bold;
+}
+
+#wide-screen {
+  background-color: black;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: -10px;
+  margin-bottom: 30px;
+  box-shadow: 1px 1px 5px black;
+}
+
+nav a {
+  color: lemonchiffon;
+  font-family: "IM Fell English", serif;
+  padding: 20px;
+}
+nav a:hover {
+  background-color: #380a02;
+  color: lemonchiffon;
+}
+
+nav span {
+  color: lemonchiffon;
+  background-color: #380a02;
+  font-family: sans-serif;
+  font-size: 16px;
+  padding: 20px;
+}
+#poem-id {
+  display: none;
+}
+pre {
+  font-family: "IM Fell English", serif;
+}
+#scanned-by {
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+@media only screen and (max-width: 600px) {
+  #login, #register {
+    margin: 2.5%;
+  }
+  #original {
+    display: none;
+  }
+  table {
+    width: 80%;
+    margin: auto;
+  }
+  #about {
+    width: 95%;
+  }
+  nav a, nav span {
+    padding: 5px;
+  }
+  #username, #email, #password, #confirmation, #submit {
+    width: 95%;
+  }
+  .scansion, .symbol, .pmc {
+    display: none;
+    background-color: lemonchiffon;
+  }
+  .symbol {
+    font-size: 20px;
+    padding: 5px;
+  }
+}
+@media only screen and (max-width: 400px) {
+  .word {
+    font-size: 16px;
+  }
+  .scansion {
+    background-color: lemonchiffon;
+  }
+  /* https://stackoverflow.com/questions/17159708/wrap-table-row-to-the-next-line */
+  table {
+    display: block;
+  }
+  td {
+    display: inline-block;
+  }
+  #wide-screen {
+    display: none;
+  }
+  #small-screen {
+    display: block;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: black;
+  }
+  #small-screen select {
+    width: 80%;
+  }
+}

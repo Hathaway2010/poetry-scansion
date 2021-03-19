@@ -1,0 +1,34 @@
+{% extends 'app/layout.html' %}
+{% load static %}
+
+
+{% block body %}
+    <div class="container">
+        {% csrf_token %}
+        <div id="poem-to-scan"></div>
+        <div id="original">
+            <div id="original-poem">
+                <p id="poem-id">{{ poem.pk }}</p>
+                <h3>{{ poem.title }}</h3>
+                <p>{{ poem.poet }}</p>
+                <label for="algorithm">
+                <select name="algorithm" id="algorithm">
+                    {% for algorithm in algorithms %}
+                        <option value="{{ algorithm.function_name }}">{{ algorithm.name }}</option>
+                    {% endfor %}
+                </select>
+                <pre id="poem-text" class="item">{{ poem.poem }}</pre>
+            </div>
+            <pre class="scansion-text item">
+                {% for scansion in scansions %}
+                    <div id="{{ scansion.type.function_name }}">{{ scansion.scansion }}</div>
+                {% endfor %}
+            </pre>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'app/automated.js' %}">
+    </script>
+{% endblock %}

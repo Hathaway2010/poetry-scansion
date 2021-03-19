@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Scansion{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'app/styles.css' %}">
+        <!-- https://stackoverflow.com/questions/13002731/responsive-design-media-query-not-working-on-iphone -->
+        <meta name="viewport" content="initial-scale=1">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&display=swap" rel="stylesheet">
+        {% block script %}
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.querySelector('#go').addEventListener('click', () => {
+                      let url = document.querySelector('#go-to-page').value
+                      if (url != 'none') {
+                              window.location = url;
+                      }
+                    })
+               })
+        </script>
+        {% endblock %}
+    </head>
+    <body>
+        <nav>
+            <div id="wide-screen">
+                <a href="{% url 'index' %}">Scan</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'choose_poem' %}">Choose a Poem</a>
+                <a href="{% url 'automated' %}">Auto-scan Our Poems</a>
+                <a href="{% url 'own_poem' %}">Auto-scan Your Poem</a>
+                {% if user.is_authenticated %}
+                    <span>Logged in as {{ user.username }}</span>
+                    {% if not user.promoted %}
+                        <span>Score: <span id="score">{{ user.points }}</span>/10</span>
+                    {% endif %}
+                    <span id="promoted">Promoted: {{ user.promoted }}</span>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </div>
+            <!-- https://css-tricks.com/convert-menu-to-dropdown/ -->
+            <!-- https://stackoverflow.com/questions/19843373/linking-to-other-pages-in-html-via-drop-down-menu -->
+            <div id="small-screen">
+                <select name="go-to-page" id="go-to-page">
+                    <option value="" selected="selected">Select</option>
+                    <option value="{% url 'index' %}">Scan</option>
+                    <option value="{% url 'choose_poem' %}">Choose a Poem</option>
+                    {% if user.is_authenticated %}
+                        <option value="{% url 'logout' %}">Logout</option>
+                    {% else %}
+                        <option value="{% url 'login' %}">Login</option>
+                        <option value="{% url 'register' %}">Register</option>
+                    {% endif %}
+                </select>
+                <input type="button" value="Go" id="go">
+            </div>
+        </nav>
+        <div>
+            {% block body %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

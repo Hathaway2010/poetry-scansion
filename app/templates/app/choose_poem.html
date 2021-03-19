@@ -1,0 +1,37 @@
+{% extends 'app/layout.html' %}
+{% load static %}
+
+{% block body %}
+    <div class="container">
+        <div id="human-scanned">
+        <h3>Human-Scanned</h3>
+        <ul>
+        {% for poem in human_list %}
+            <li>{{ poem.poet }}: {{ poem.title }}
+                <a href="{% url 'poem' id=poem.pk %}"><button>Scan</button></a>
+                <a href="{% url 'automated' id=poem.pk %}"><button>See Automated Scansion</button></a>
+            </li>
+        {% endfor %}
+        </ul>
+        </div>
+        {% if user.is_authenticated and user.promoted %}
+            <div id="computer-scanned">
+                <h3>Computer-Scanned to Correct</h3>
+                <ul>
+                    {% if computer_list %}
+                        {% for poem in computer_list %}
+                        <li>{{ poem.poet }}: {{ poem.title }}
+                            <a href="{% url 'poem' id=poem.pk %}"><button>Scan</button></a>
+                            <a href="{% url 'automated' id=poem.pk %}"><button>See Automated Scansion</button></a>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>None at present; check back later</p>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

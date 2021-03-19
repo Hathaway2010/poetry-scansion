@@ -1,0 +1,15 @@
+{% extends 'app/layout.html' %}
+
+{% block body %}
+    <form action="{% url 'import_poem' %}" method="POST">
+        {% csrf_token %}
+        <label for="title">Poem Title</label>
+        <input type="text" id="title" name="title" placeholder="Poem Title">
+        <label for="poet">Poet</label>
+        <input type="text" id="poet" name="poet" placeholder="Poet">
+        <label for="poem">Poem</label>
+        <textarea id="poem" name="poem" rows="25" cols="200"></textarea>
+        <label for="submit">Submit</label>
+        <input type="submit" id="submit">
+    </form>
+{% endblock %}
