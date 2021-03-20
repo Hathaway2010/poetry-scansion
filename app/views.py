@@ -165,6 +165,8 @@ def automated(request, id=''):
                              type=algorithm)
             s.save()
     scansions = PoemScansion.objects.filter(poem=poem)
+    poem.scansion = scansions[0].scansion
+    poem.save()
     return render(request, "app/automated.html", {
     "poem": poem, "scansions": scansions, "algorithms": algorithms
     })
