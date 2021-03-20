@@ -49,6 +49,8 @@
                     <option value="" selected="selected">Select</option>
                     <option value="{% url 'index' %}">Scan</option>
                     <option value="{% url 'choose_poem' %}">Choose a Poem</option>
+                    <option value="{% url 'automated' %}">Auto-scan Our Poems</option>
+                    <option value="{% url 'own_poem' %}">Auto-scan Your Poem</option>
                     {% if user.is_authenticated %}
                         <option value="{% url 'logout' %}">Logout</option>
                     {% else %}
