@@ -1,8 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   // get poem and scansion from the HTML
   document.querySelector('#algorithm').addEventListener('input', reload);
-  reload()
-})
+  reload();
+  document.querySelector('#go').addEventListener('click', () => {
+    let url = document.querySelector('#go-to-page').value;
+    if (url != 'none') {
+            window.location = url;
+        }
+  });
+});
 
 function reload() {
   const tables = document.querySelectorAll('table')
