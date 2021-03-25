@@ -3,7 +3,7 @@ from .models import Pronunciation
 from copy import copy
 
 newline = re.compile("\r\n|\n|\r")
-disallowed = re.compile("[^A-Za-z]")
+disallowed = re.compile("[^A-Za-zé]")
 
 def get_stats(word):
     # get version of word without non-alphabetic characters and lowercase
@@ -20,7 +20,7 @@ def get_stats(word):
         values = []
         for char in patterns[0].stresses:
             if char == "u":
-                values.append(round(0.1 / patterns[0].popularity, 2))
+                values.append(round(0.1 / patterns[0].popularity, 4))
             else:
                 values.append(2.0 * patterns[0].popularity)
         return values
@@ -158,7 +158,7 @@ def house_robber_scan(poem):
             # if the sum of stress values contained in prev1 is less than the sum
             # of stress values in prev2 + the current stress value
             # make prev1 a copy of prev2
-            if sum(p[0] for p in prev1) < sum(p[0] for p in prev2) + pair[0]:
+            if sum(p[0] for p in prev1) <= sum(p[0] for p in prev2) + pair[0]:
                 prev2.append(pair)
                 prev1 = copy(prev2)
             # either way, make the previous prev1 prev2
@@ -188,6 +188,7 @@ def record(poem, scansion):
     scanned_words = scansion.split()
     # find each word in the database if it is there
     for i, word in enumerate(words):
+        print(word, scanned_words[i])
         w = Pronunciation.objects.filter(word=word)
         # see if any instances of the word have the user-inputted stress pattern
         found = False
@@ -197,19 +198,21 @@ def record(poem, scansion):
                 pron.popularity += 1
                 pron.save()
                 found = True
+                print(f"Found; new popularity: {pron.popularity}")
         # otherwise create a new instance of the word with the correct pronunciation
         if not found:
             new_pron = Pronunciation(word=word, stresses=scanned_words[i], popularity=1)
             new_pron.save()
+            print(f"Not found: created {new_pron}")
 
 # count the syllables in a word if it is not in the database
 def syllables(word):
-    vowels_or_clusters = re.compile("[AEIOUaeiouy]+")
-    vowel_split = re.compile("ao|ia[^n]|iet|[^cgst]ian|io[^nu]|iu|[^gq]ua|[^gq]ue[lt]|[^q]uo|[aeiouy]ing|[aeiou]y[aiou]") # exceptions: Preus, Aida, venetian, mention, piety, Lucius, poet, luau, quilt(check if there's a q if there's a u)
+    vowels_or_clusters = re.compile("[AEÉIOUaeéiouy]+")
+    vowel_split = re.compile("[aiouy]é|ao|eo[^u]|ia[^n]|[^ct]ian|iet|io[^nu]|[^c]iu|[^gq]ua|[^gq]ue[lt]|[^q]uo|[aeiouy]ing|[aeiou]y[aiou]") # exceptions: Preus, Aida, poet, luau
     final_e = re.compile("e$")
     silent_final_ed_es = re.compile("[^aeiouydlrt]ed$|[^aeiouycghjlrsxz]es$|thes$|[aeiouylrw]led$|[aeiouylrw]les$|[aeiouyrw]res$|[aeiouyrw]red$")
     lonely = re.compile("[^aeiouy]ely$")
-    audible_final_e = re.compile('[^aeiouy]le$|[aeiouy]e')
+    audible_final_e = re.compile('[^aeiouylrw]le$|[^aeiouywr]re$|[aeioy]e|[^g]ue')
     word = word.lower()
     voc = re.findall(vowels_or_clusters, word)
     count = len(voc)
