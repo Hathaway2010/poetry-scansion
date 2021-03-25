@@ -97,7 +97,7 @@ span {
 .word {
   text-align: center;
 }
-.scansion {
+.scansion, .autoscansion {
   text-align: center;
 }
 .pmc {
@@ -173,7 +173,13 @@ pre {
     margin: 2.5%;
   }
   #original {
-    display: none;
+    width: 100%;
+  }
+  #original-poem {
+    padding: 5px;
+    width: 95%;
+    font-size: 16px;
+    margin: 10px
   }
   table {
     width: 80%;
@@ -199,7 +205,7 @@ pre {
 }
 @media only screen and (max-width: 400px) {
   .word {
-    font-size: 16px;
+    font-size: 13px;
   }
   .scansion {
     background-color: lemonchiffon;
@@ -207,9 +213,14 @@ pre {
   /* https://stackoverflow.com/questions/17159708/wrap-table-row-to-the-next-line */
   table {
     display: block;
+    padding: 4px;
+    width: 100%;
   }
   td {
     display: inline-block;
+  }
+  .autoline td {
+    display: table-cell
   }
   #wide-screen {
     display: none;

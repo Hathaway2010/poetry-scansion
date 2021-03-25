@@ -34,6 +34,7 @@ function reload() {
       let table = document.createElement('table');
       // identify it by its corresponding line
       table.setAttribute('id', `line${i}`);
+      table.setAttribute('class', 'autoline')
       // create two rows in the table, one for stress patterns, one for words
       table.innerHTML = `<tr class="stress-pattern"></tr>
                          <tr class="words"></tr>`;
@@ -46,7 +47,7 @@ function reload() {
         // for each word, create a cell and give it an id indicating where it falls and the purpose it serves
         let scansion = document.createElement('td');
         scansion.setAttribute('id', `scansion${i}-${j}`);
-        scansion.setAttribute('class', 'scansion');
+        scansion.setAttribute('class', 'autoscansion');
         // append this cell to the scansion row
         stress.append(scansion);
         // if the scansion has a corresponding "word," add symbols to the cell to represent each syllable
