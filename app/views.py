@@ -33,7 +33,7 @@ def index(request):
             return HttpResponse()
 
         # otherwise, score the user
-        else:
+        elif request.user.is_authenticated:
             u = request.user
             u.points += data["score"]
             u.save()
@@ -42,20 +42,46 @@ def index(request):
                 u.promoted = True
                 u.save()
             return HttpResponse()
+        else:
+            return HttpResponse()
     else:
         # if user is logged in, respond to GET request with a random poem
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.user.promoted:
             # https://books.agiliq.com/projects/django-orm-cookbook/en/latest/random.html
-            if request.user.promoted:
-                # if user is promoted, choose poem from all poems
-                poem = Poem.objects.all().order_by("?").first()
-            else:
-                # otherwise, whether user logged in or not display poem
-                # chosen from only human-scanned poems
-                poem = Poem.objects.filter(human_scanned=True).order_by("?").first()
-
+            # if user is promoted, choose poem from all poems
+            poem = Poem.objects.all().order_by("?").first()
         else:
-            poem = Poem.objects.filter(human_scanned=True).order_by("?").first()
+            # otherwise, whether user logged in or not display poem
+            # chosen from only human-scanned poems
+            poems = Poem.objects.filter(human_scanned=True).order_by("?")
+            if poems.exists():
+                poem = poems.first()
+            else:
+                tempestuous = """Full fathom five thy father lies:
+                                    Of his bones are coral made;
+                                 Those are pearls that were his eyes:
+                                    Nothing of him that doth fade,
+                                 But doth suffer a sea-change
+                                 Into something rich and strange;
+                                 Sea-nymphs hourly ring his knell:
+                                 Hark! now I hear them,--
+                                    Ding, dong, Bell."""
+                scansion = """u /u / u /u /
+                              / u / u /u /
+                              / u / u / u /
+                              /u / u / u /
+                              / u /u u /u
+                              /u /u / u /
+                              /u /u / u /
+                              / u u / u
+                              / u / """
+
+                poem = Poem(title="A Sea Dirge",
+                            poem=tempestuous,
+                            scansion=scansion,
+                            human_scanned=True,
+                            poet="Shakespeare, William")
+
         return render(request, "app/index.html", {"poem": poem})
 
 def about(request):
@@ -134,7 +160,7 @@ def import_poem(request):
                 item.save()
         # otherwise, save new poem
         else:
-            p = Poem(title=title, poem=poem, poet=poet, scansion=scansion, human_scanned=human_scanned)
+            p = Poem(title=title, poem=poem, poet=poet, scansion=scansion)
             p.save()
         return HttpResponse(scansion)
 
