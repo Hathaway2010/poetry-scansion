@@ -58,23 +58,23 @@ def index(request):
                 poem = poems.first()
             else:
                 tempestuous = """Full fathom five thy father lies:
-                                    Of his bones are coral made;
-                                 Those are pearls that were his eyes:
-                                    Nothing of him that doth fade,
-                                 But doth suffer a sea-change
-                                 Into something rich and strange;
-                                 Sea-nymphs hourly ring his knell:
-                                 Hark! now I hear them,--
-                                    Ding, dong, Bell."""
+Of his bones are coral made;
+Those are pearls that were his eyes:
+Nothing of him that doth fade,
+But doth suffer a sea-change
+Into something rich and strange;
+Sea-nymphs hourly ring his knell:
+Hark! now I hear them,--
+Ding, dong, Bell."""
                 scansion = """u /u / u /u /
-                              / u / u /u /
-                              / u / u / u /
-                              /u / u / u /
-                              / u /u u /u
-                              /u /u / u /
-                              /u /u / u /
-                              / u u / u
-                              / u / """
+/ u / u /u /
+/ u / u / u /
+/u / u / u /
+u u /u u /u
+/u /u / u /
+/u /u / u /
+/ u u / u
+/ u /"""
 
                 poem = Poem(title="A Sea Dirge",
                             poem=tempestuous,
@@ -99,8 +99,10 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            print("Logging in successfully")
             return HttpResponseRedirect(reverse("index"))
         else:
+            print("Can't log in")
             return render(request, "app/login.html", {
                 "message": "Invalid username and/or password."
             })

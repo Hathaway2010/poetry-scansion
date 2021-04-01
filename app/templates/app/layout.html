@@ -36,9 +36,9 @@
                         <span>Score: <span id="score">{{ user.points }}</span>/10</span>
                     {% endif %}
                     <span id="promoted">Promoted: {{ user.promoted }}</span>
-                    <a href="{% url 'logout' %}">Logout</a>
+                    <a id="logout" href="{% url 'logout' %}">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}">Login</a>
+                    <a id="login_link" href="{% url 'login' %}">Login</a>
                     <a href="{% url 'register' %}">Register</a>
                 {% endif %}
             </div>

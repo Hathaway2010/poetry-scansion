@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // create a plus button
         let plus = document.createElement('button');
         plus.textContent = '+';
-        plus.setAttribute('class', 'pm');
+        plus.setAttribute('class', 'plus pm');
         // call a function that adds a syllable to the word when clicked
         plus.addEventListener('click', (event) => {
           addSyllable(event);
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // create a minus button
         let minus = document.createElement('button');
         minus.textContent = '-';
-        minus.setAttribute('class', 'pm');
+        minus.setAttribute('class', 'minus pm');
         // call a function that removes a syllable from the word when clicked
         minus.addEventListener('click', (event) => {
           removeSyllable(event);
@@ -181,10 +181,15 @@ function submitScansion() {
   // get every table containing a line of poetry
   const lines = document.querySelectorAll('table');
   // get the original poem's scansion from hidden div in html and split it into lines
-  const oldScansion = document.querySelector('.scansion-text').textContent.split(/\r\n|\n|\r/);
+  const oldScansion = document.querySelector('#scansion-text').textContent.split(/\r\n|\n|\r/);
+  let wordCount = 0;
+  for (let n = 0; n < oldScansion.length; n++) {
+    oldScansion[n] = oldScansion[n].trim()
+    wordCount += oldScansion[n].split(' ').length;
+  }
   // get word count for scoring later
-  let wordCount = document.querySelector('.scansion-text').textContent.split(' ').length;
-  // disable submit button so user can't get points by submitting already-corrected work
+  // let wordCount = document.querySelector('#scansion-text').textContent.split(' ').length;
+  // disable submit button so user can't get points by submitting already-corrected word
   document.querySelector('#submit-scansion').disabled = true;
   // create empty string for stress pattern and counter for differences
   let stressPattern = '';
@@ -194,7 +199,7 @@ function submitScansion() {
     // get all cells containing words
     let words = lines[i].querySelectorAll('.word');
     // split corresponding line of original scansion into words
-    let scannedWords = oldScansion[i].split(' ');
+    let scannedWords = oldScansion[i].trim().split(' ');
     // if table contains words, compare old scansion to new for each word
     if (words.length != 0) {
       for (let j = 0; j < words.length; j++) {
@@ -206,15 +211,15 @@ function submitScansion() {
         // https://stackoverflow.com/questions/6967073/javascript-delete-all-occurrences-of-a-char-in-a-string
         // if the scansions are not the same, mark the cell pale red
         scansion = scanCell.textContent;
-        console.log(scansion);
         if (scansion != scannedWords[j]) {
+          // console.log(`${scansion} != ${scannedWords[j]}`)
           scanCell.style.backgroundColor = '#ffcccc';
           words[j].style.backgroundColor = '#ffcccc';
-          // log what the difference should be; eventually this may be a tooltip
-          console.log(`${scansion} should maybe be ${scannedWords[j]}`)
           // increment the difference counter
           diffCounter++;
-        // if the scasions are the same, mark the cell pale green
+          // if the scasions are the same, mark the cell pale green
+          // log what the difference should be; eventually this may be a tooltip
+          // console.log(`${scansion} should maybe be ${scannedWords[j]}; diffs = ${diffCounter}`)
         } else {
           scanCell.style.backgroundColor = '#99ffbb';
           words[j].style.backgroundColor = '#99ffbb';
@@ -236,7 +241,7 @@ function submitScansion() {
   // if the user is promoted, submit the new scansion via a put request
   if (document.querySelector('#promoted') && document.querySelector('#promoted').textContent == 'Promoted: True') {
     poemId = document.getElementById('poem-id').textContent;
-    alert(`New stresses will be recorded, but this will take a moment; disagreements between you and previous scansion (${diffCounter / wordCount} of words) will be marked in red, agreements in green.`)
+    alert(`New stresses will be recorded, but this will take a moment; disagreements between you and previous scansion (${Math.round(diffCounter * 100 / wordCount)}% of words) will be marked in red, agreements in green.`)
     fetch('/', {method: 'PUT', body: JSON.stringify({
       scansion: stressPattern,
       id: poemId
@@ -244,15 +249,15 @@ function submitScansion() {
     })
   // otherwise, calculate a score for the user
   } else {
-    const percentage = diffCounter / wordCount;
+    const percentage = Math.round(diffCounter * 100 / wordCount);
     // score defaults to -1, which user will get if they get more than 0.3 of the words wrong.
     let score = -1;
     // if the user got fewer than a tenth of the words wrong, their score goes up by a point
-    if (percentage < 0.1) {
+    if (percentage < 10) {
       score = 1;
     // if the user got fewer than ~a third of the words wrong but more than
     // a tenth they're doing better than the computer, and have no impact
-    } else if (percentage < 0.3) {
+  } else if (percentage < 30) {
       score = 0;
     }
     // again, this method for getting csrf token verification is cited above
@@ -274,21 +279,21 @@ function submitScansion() {
       }
       // if user is logged in, give them an alert about their score
       if (score == 1) {
-        alert(`You have gained a point! Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`You have gained a point! Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       } else if (score == -1) {
-        alert(`You have lost a point! Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`You have lost a point! Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       } else {
-        alert(`You neither gained nor lost a point. Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`You neither gained nor lost a point. Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       }
     }
     // if not, tell them what their score would have been!
     if (!document.querySelector('#promoted')) {
       if (score == 1) {
-        alert(`If you were logged in, you would have gained a point! Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`If you were logged in, you would have gained a point! Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       } else if (score == -1) {
-        alert(`If you were logged in, you would have lost a point! Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`If you were logged in, you would have lost a point! Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       } else {
-        alert(`If you were logged in, you would have neither gained nor lost a point. Look at the poem to see where your scansion differed from the most recent authoritative scansion.`)
+        alert(`If you were logged in, you would have neither gained nor lost a point. Look at the poem to see where your scansion differed (${percentage}% of words) from the most recent authoritative scansion.`)
       }
     }
   }
