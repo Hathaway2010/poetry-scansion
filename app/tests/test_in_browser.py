@@ -1,5 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
+from django.test import tag
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -17,6 +18,7 @@ TEMPEST_STRESSED = ["scansion0-1", "scansion0-2", "scansion0-4", "scansion0-5",
                     "scansion7-0", "scansion7-3",
                     "scansion8-0", "scansion8-2"]
 
+@tag("selenium")
 class TestIndex(StaticLiveServerTestCase):
     port=8000
     @classmethod
@@ -43,7 +45,7 @@ class TestIndex(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_layout_not_authenticated(self):
+    def test_layout(self):
         self.selenium.get(f"{self.live_server_url}")
         site = self.selenium.find_elements_by_tag_name("body")
         self.assertEqual(len(site), 1)
@@ -180,5 +182,3 @@ class TestIndex(StaticLiveServerTestCase):
                                  "rgba(153, 255, 187, 1)")
                 self.assertEqual(pair[1].value_of_css_property("background-color"),
                                  "rgba(153, 255, 187, 1)")
-
-    
