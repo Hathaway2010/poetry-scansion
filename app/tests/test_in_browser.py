@@ -99,8 +99,8 @@ class TestIndex(StaticLiveServerTestCase):
         self.selenium.get(f"{self.live_server_url}")
         submit = self.selenium.find_element_by_id("submit-scansion")
         submit.click()
-        for entry in self.selenium.get_log("browser"):
-             print(entry)
+        # to debug: for entry in self.selenium.get_log("browser"):
+        #      print(entry)
         alert = self.selenium.switch_to_alert()
         alert_text = alert.text
         alert.accept()

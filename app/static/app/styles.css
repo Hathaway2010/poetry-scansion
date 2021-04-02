@@ -41,7 +41,18 @@ button {
 .pm {
   padding: 7px;
 }
-
+.tooltip {
+  visibility: none;
+  width: 120px;
+  background-color: #380a02;
+  color: lemonchiffon;
+  font-size: 10px;
+}
+.scansion:hover .tooltip {
+  display: inline-block;
+  position: absolute;
+  z-index: 2
+}
 button:hover {
   font-weight: bold;
   background-color: #380a02;

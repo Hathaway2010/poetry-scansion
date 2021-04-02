@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // });
         // append this cell to the scansion row
         stress.append(scansion);
+
         // if the scansion has a corresponding "word," add symbols to the cell to represent each syllable
         if (scanned_words[j]) {
           // loop through each syllable (indicated by a symbol) in the scansion

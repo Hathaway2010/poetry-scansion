@@ -119,6 +119,39 @@ class TestIndex(StaticLiveServerTestCase):
         self.assertEqual(len(lines), 1)
         self.assertEqual(self.selenium.find_element_by_id("poem-text").text, "moon squirrel")
 
+    def test_submit_unchanged_not_promoted(self):
+        session_cookie = create_session_cookie(User.objects.get(username="squirrel"))
+        self.selenium.get(f"{self.live_server_url}")
+        self.selenium.add_cookie(session_cookie)
+        self.selenium.refresh()
+        self.selenium.get(f"{self.live_server_url}")
+        submit = self.selenium.find_element_by_id("submit-scansion")
+        submit.click()
+        alert = self.selenium.switch_to_alert()
+        alert_text = alert.text
+        alert.accept()
+        self.assertEqual(alert_text, "You have lost a point! Look at the poem to see where your scansion differed (63% of words) from the most recent authoritative scansion.")
+        words = self.selenium.find_elements_by_class_name("word")
+        scansions = self.selenium.find_elements_by_class_name("scansion")
+        for pair in zip(words, scansions):
+            if pair[1].get_attribute("id") in TEMPEST_STRESSED:
+                self.assertEqual(pair[0].value_of_css_property("background-color"),
+                                 "rgba(255, 204, 204, 1)")
+                self.assertEqual(pair[1].value_of_css_property("background-color"),
+                                 "rgba(255, 204, 204, 1)")
+            else:
+                self.assertEqual(pair[0].value_of_css_property("background-color"),
+                                 "rgba(153, 255, 187, 1)")
+                self.assertEqual(pair[1].value_of_css_property("background-color"),
+                                 "rgba(153, 255, 187, 1)")
+        score = self.selenium.find_elements_by_id("score")
+        self.assertEqual(len(score), 1)
+        self.assertEqual(score[0].text, "8")
+        self.assertFalse(submit.is_enabled())
+        self.assertEqual(User.objects.get(username="squirrel").points, 8)
+
+
+
     @tag("slow")
     def test_register(self):
         self.selenium.get(f"{self.live_server_url}/register")
