@@ -1,9 +1,9 @@
 {% extends 'app/layout.html' %}
 {% load static %}
-<div class="tooltip" id="sctooltip">The "u" symbol indicates an unstressed syllable, the "/" a stressed syllable. Click to switch between symbols.</div>
-<div class="tooltip" id="pmtooltip">The plus button adds a syllable. The minus removes one.</div>
 
 {% block body %}
+<div class="tooltip" id="sctooltip">The "u" symbol means an unstressed syllable. "/" means a stressed syllable. Click to switch between symbols.</div>
+<div class="tooltip" id="pmtooltip">The plus button adds a syllable. The minus removes one.</div>
     <div class="container">
         {% csrf_token %}
         <div id="poem-to-scan"></div>

@@ -46,9 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let scansion = document.createElement('td');
         scansion.setAttribute('id', `scansion${i}-${j}`);
         scansion.setAttribute('class', 'scansion');
-        // scansion.addEventListener('click', (event) => {
-        //   grow(event.target)
-        // });
+        scansion.addEventListener('mouseover', (event) => {
+          showTooltip(event)
+        })
+        scansion.addEventListener('mouseout', hideTooltip)
         // append this cell to the scansion row
         stress.append(scansion);
 
@@ -96,9 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let plusMinusCell = document.createElement('td')
         plusMinusCell.setAttribute('id', `pm${i}-${j}`);
         plusMinusCell.setAttribute('class', 'pmc')
-        // plusMinusCell.addEventListener('click', (event) => {
-        //   grow(event.target)
-        // });
+        plusMinusCell.addEventListener('mouseover', (event) => {
+          showTooltip(event);
+        })
+        plusMinusCell.addEventListener('mouseout', hideTooltip)
         plusMinus.append(plusMinusCell);
         // create a plus button
         let plus = document.createElement('button');
@@ -299,7 +301,26 @@ function submitScansion() {
     }
   }
 }
-
+function showTooltip(event) {
+  const rect = event.target.getBoundingClientRect();
+  const tX = rect.right + 10
+  const tY = rect.top + 10 - window.pageYOffset
+  let tooltip;
+  if (event.target.className =="scansion" || event.target.className == "symbol") {
+    tooltip = document.getElementById("sctooltip");
+  } else {
+    tooltip = document.getElementById("pmtooltip");
+  }
+  tooltip.style.left = `${tX}px`
+  tooltip.style.top = `${tY}px`
+  tooltip.style.visibility = 'visible';
+}
+function hideTooltip() {
+  tooltips = document.querySelectorAll('class', 'tooltip');
+  tooltips.forEach((element) => {
+    element.style.visibility = 'hidden';
+  })
+}
 function showControls(event) {
   // hide any other scansion open
   document.querySelectorAll('.pmc').forEach((element) => {

@@ -42,17 +42,19 @@ button {
   padding: 7px;
 }
 .tooltip {
-  visibility: none;
+  visibility: hidden;
+  position: absolute;
   width: 120px;
+  height: auto;
   background-color: #380a02;
   color: lemonchiffon;
-  font-size: 10px;
+  font-size: 12px;
+  font-family: sans-serif;
+  padding: 7px;
+  box-shadow: 1px 1px 5px black;
+
 }
-.scansion:hover .tooltip {
-  display: inline-block;
-  position: absolute;
-  z-index: 2
-}
+
 button:hover {
   font-weight: bold;
   background-color: #380a02;
