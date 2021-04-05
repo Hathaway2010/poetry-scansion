@@ -51,8 +51,6 @@ button {
   font-size: 12px;
   font-family: sans-serif;
   padding: 7px;
-  box-shadow: 1px 1px 5px black;
-
 }
 
 button:hover {

@@ -6,6 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.container').addEventListener('click', (event) => {
     grow(event.target);
   });
+  if (window.innerWidth < 600) {
+    scinstructions = document.getElementById('sctooltip').textContent;
+    alert(scinstructions);
+    pminstructions = document.getElementById('pmtooltip').textContent;
+    alert(pminstructions);
+    document.querySelector('.container').addEventListener('click', (event) => {
+      if (event.target.className == "word") {
+        showControls(event);
+      } else {
+        hideControls()
+      }
+    })
+  }
   // make dropdown menu work
   document.querySelector('#go').addEventListener('click', () => {
     let url = document.querySelector('#go-to-page').value
@@ -46,10 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let scansion = document.createElement('td');
         scansion.setAttribute('id', `scansion${i}-${j}`);
         scansion.setAttribute('class', 'scansion');
-        scansion.addEventListener('mouseover', (event) => {
-          showTooltip(event)
-        })
-        scansion.addEventListener('mouseout', hideTooltip)
+        if (window.innerWidth >= 600) {
+          scansion.addEventListener('mouseover', (event) => {
+            showTooltip(event)
+          })
+          scansion.addEventListener('mouseleave', hideTooltip)
+        }
         // append this cell to the scansion row
         stress.append(scansion);
 
@@ -86,11 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // });
         // if this is a mobile device, add an event listener that will expand a given word's set of controls when that word is clicked
         // https://www.w3schools.com/howto/howto_js_media_queries.asp
-        if (window.innerWidth <= 600) {
-          word.addEventListener('click', (event) => {
-            showControls(event);
-          });
-        }
         wordRow.append(word);
         // pronunciations change over time and between dialects, and the automated syllable makes mistakes as well; accordingly,
         // users should be able to add syllables to words or remove them; create a cell for plus and minus buttons, assign it the appropriate id and class, and append it to the third row of the table.
@@ -100,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plusMinusCell.addEventListener('mouseover', (event) => {
           showTooltip(event);
         })
-        plusMinusCell.addEventListener('mouseout', hideTooltip)
+        plusMinusCell.addEventListener('mouseleave', hideTooltip)
         plusMinus.append(plusMinusCell);
         // create a plus button
         let plus = document.createElement('button');
@@ -302,6 +312,7 @@ function submitScansion() {
   }
 }
 function showTooltip(event) {
+  hideTooltip();
   const rect = event.target.getBoundingClientRect();
   const tX = rect.right + 10
   const tY = rect.top + 10 - window.pageYOffset
@@ -316,11 +327,13 @@ function showTooltip(event) {
   tooltip.style.visibility = 'visible';
 }
 function hideTooltip() {
-  tooltips = document.querySelectorAll('class', 'tooltip');
+  tooltips = document.querySelectorAll('.tooltip');
+  console.log(tooltips);
   tooltips.forEach((element) => {
     element.style.visibility = 'hidden';
   })
 }
+
 function showControls(event) {
   // hide any other scansion open
   document.querySelectorAll('.pmc').forEach((element) => {
@@ -331,33 +344,35 @@ function showControls(event) {
   })
   shrink();
   // get suffix of word's id and get corresponding scansion and plus-minus cells
-  const id = event.target.id;
-  const suffix = id.slice(4);
-  const scan = document.getElementById(`scansion${suffix}`);
-  const pM = document.getElementById(`pm${suffix}`);
-  event.target.style.fontSize = '30px';
-  event.target.style.backgroundColor = 'lemonchiffon';
-  // position those cells above and below the word respectively, guessing at pixel widths of elements
-  // https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
-  // https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
-  // https://stackoverflow.com/questions/38325789/getboundingclientrect-is-inaccurate
-  const rect = event.target.getBoundingClientRect();
-  const sX = (rect.left + rect.right) / 2 - scan.textContent.length * 10;
-  const pMX = (rect.left + rect.right) / 2 - 20;
-  const y = rect.top + window.pageYOffset;
-  const pMY = rect.bottom + window.pageYOffset;
-  scan.style.position = 'absolute';
-  scan.style.left = `${sX}px`
-  scan.style.top = `${y - 20}px`
-  pM.style.position = 'absolute';
-  pM.style.top = `${pMY}px`
-  pM.style.left = `${pMX}px`;
-  pM.style.backgroundColor = 'lemonchiffon';
-  scan.style.display = 'inline';
-  scan.childNodes.forEach((element) => {
-    element.style.display = 'inline';
-  })
-  pM.style.display = 'inline';
+if (event.target.id) {
+    const id = event.target.id;
+    const suffix = id.slice(4);
+    const scan = document.getElementById(`scansion${suffix}`);
+    const pM = document.getElementById(`pm${suffix}`);
+    event.target.style.fontSize = '30px';
+    event.target.style.backgroundColor = 'lemonchiffon';
+    // position those cells above and below the word respectively, guessing at pixel widths of elements
+    // https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
+    // https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
+    // https://stackoverflow.com/questions/38325789/getboundingclientrect-is-inaccurate
+    const rect = event.target.getBoundingClientRect();
+    const sX = (rect.left + rect.right) / 2 - scan.textContent.length * 10;
+    const pMX = (rect.left + rect.right) / 2 - 20;
+    const y = rect.top + window.pageYOffset;
+    const pMY = rect.bottom + window.pageYOffset;
+    scan.style.position = 'absolute';
+    scan.style.left = `${sX}px`
+    scan.style.top = `${y - 20}px`
+    pM.style.position = 'absolute';
+    pM.style.top = `${pMY}px`
+    pM.style.left = `${pMX}px`;
+    pM.style.backgroundColor = 'lemonchiffon';
+    scan.style.display = 'inline';
+    scan.childNodes.forEach((element) => {
+      element.style.display = 'inline';
+    })
+    pM.style.display = 'inline';
+  }
 }
 // found and adapted this function from Django documentation (as I'm only accessing one cookie,
 // I figure I don't need to take cookie name as an argument, as the documentation does)
@@ -410,4 +425,13 @@ function shrink() {
   document.querySelectorAll('.word').forEach((element) => {
     element.style.fontSize = '16px';
   });
+}
+
+function hideControls() {
+  document.querySelectorAll('.pmc').forEach((element) => {
+    element.style.display = 'none';
+  })
+  document.querySelectorAll('.scansion').forEach((element) => {
+    element.style.display = 'none';
+  })
 }
