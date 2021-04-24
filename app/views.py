@@ -13,7 +13,7 @@ import json
 from .models import User, Pronunciation, Poem, Algorithm, PoemScansion
 from . import scan
 
-SCANS = {"house_robber_scan": scan.house_robber_scan, "original_scan": scan.original_scan}
+SCANS = {"house_robber_scan": scan.house_robber_scan, "original_scan": scan.original_scan, "prose_scan": scan.prose_scan}
 
 # Create your views here.
 def index(request):
@@ -186,8 +186,8 @@ def automated(request, id=''):
     else:
         poem = Poem.objects.all().order_by("?").first()
     algorithms = Algorithm.objects.all().order_by("-preferred")
-    if not PoemScansion.objects.filter(poem=poem).exists():
-        for algorithm in algorithms:
+    for algorithm in algorithms:
+        if not PoemScansion.objects.filter(poem=poem, type=algorithm):
             s = PoemScansion(poem=poem,
                              scansion=SCANS[algorithm.function_name](poem.poem),
                              type=algorithm)

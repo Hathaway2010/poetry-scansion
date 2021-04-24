@@ -179,6 +179,22 @@ def house_robber_scan(poem):
         poem_scansion.append(line_scansion)
     return "\n".join(poem_scansion)
 
+def prose_scan(poem):
+    stats = poem_stats(poem)
+    poem_scansion = []
+    for line in stats:
+        line_scansion = ""
+        if line:
+            for value in line:
+                if value in [" ", "?"]:
+                    line_scansion += value
+                elif value > 1:
+                    line_scansion += "/"
+                else:
+                    line_scansion += "u"
+        poem_scansion.append(line_scansion)
+    return "\n".join(poem_scansion)
+                    
 
 # record stress patterns of words scanned by a promoted user in the database
 def record(poem, scansion):
