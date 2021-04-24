@@ -12,7 +12,7 @@ class User(AbstractUser):
 class Pronunciation(models.Model):
     word = models.CharField(max_length=50, db_index=True)
     stresses = models.CharField(max_length=20, blank=True)
-    popularity = models.IntegerField(default=1)
+    popularity = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.word}, {self.stresses}, popularity: {self.popularity}"
