@@ -5,7 +5,7 @@ from copy import copy
 newline = re.compile("\r\n|\n|\r")
 disallowed = re.compile("[^A-Za-zé]")
 
-def get_stats(word):
+def get_stats(word, confidence=False):
     # get version of word without non-alphabetic characters and lowercase
     w = re.sub(disallowed, "", word)
     w = w.lower()
@@ -14,7 +14,10 @@ def get_stats(word):
     # if there are none, guess the syllable count and return a list of
     # [syllables] question marks to indicate that stress pattern is unknown
     if not patterns.exists():
-        return ["?" for i in range(syllables(w))]
+        scansion = ["?" for i in range(syllables(w))]
+        if confidence:
+            return (scansion, 0)
+        return scansion
     # if there is one, add 0.1 / popularity if it is unstressed or 0.1 * popularity if it is stressed
     elif patterns.count() == 1:
         values = []
@@ -23,6 +26,8 @@ def get_stats(word):
                 values.append(round(0.1 / patterns[0].popularity, 4))
             else:
                 values.append(2.0 * patterns[0].popularity)
+        if confidence:
+            return (values, patterns[0].popularity)
         return values
     else:
         # some inspiration from https://stackoverflow.com/questions/3844801/check-if-all-elements-in-a-list-are-identical
@@ -64,6 +69,8 @@ def get_stats(word):
             # add the ratio of stressed to unstressed interpretations of each syllable
             # to the "values" list in order
             values.append(round(stressed / unstressed, 4))
+        if confidence:
+            return (values, max_pop)
         return values
 
 def poem_stats(poem):
@@ -194,6 +201,9 @@ def prose_scan(poem):
                     line_scansion += "u"
         poem_scansion.append(line_scansion)
     return "\n".join(poem_scansion)
+
+
+        
                     
 
 # record stress patterns of words scanned by a promoted user in the database
