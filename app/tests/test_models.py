@@ -22,8 +22,8 @@ class TestPronunciation(TestCase):
         p = Pronunciation.objects.filter(word="moon")
         self.assertTrue(p.exists())
         self.assertEqual(p[0].stresses, "/")
-        self.assertEqual(p[0].popularity, 1)
-        self.assertEqual(p[0].__str__(), "moon, /, popularity: 1")
+        self.assertEqual(p[0].popularity, 0)
+        self.assertEqual(p[0].__str__(), "moon, /, popularity: 0")
 
 class TestPoem(TestCase):
     @classmethod

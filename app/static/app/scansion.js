@@ -314,8 +314,8 @@ function submitScansion() {
 function showTooltip(event) {
   hideTooltip();
   const rect = event.target.getBoundingClientRect();
-  const tX = rect.right + 10
-  const tY = rect.top + 10 - window.pageYOffset
+  const tX = rect.right + 50
+  const tY = rect.top + 10 + window.pageYOffset
   let tooltip;
   if (event.target.className =="scansion" || event.target.className == "symbol") {
     tooltip = document.getElementById("sctooltip");

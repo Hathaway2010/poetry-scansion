@@ -32,7 +32,7 @@ All of the current poems available for practice except "Home-Bound" by Joseph Au
 ## How to Run the App Locally
 To run the app on localhost, one needs Django and Python 3 installed. Clone the repository into the desired directory, navigate into the directory created thereby, and:
 1. Generate a secret key on the command line as described [here](https://humberto.io/blog/tldr-generate-django-secret-key)
-2. Create a file called local_settings.py containing
+2. Create a file called local_settings.py in the scansion directory containing
 ```
 from .settings import *
 

@@ -7,6 +7,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from app.views import index, about, import_poem, poem, choose_poem, automated, own_poem
 from app.models import User, Pronunciation, Poem, Algorithm, PoemScansion
+import time
 
 TEMPEST_STRESSED = ["scansion0-1", "scansion0-2", "scansion0-4", "scansion0-5",
                     "scansion1-0", "scansion1-2", "scansion1-4", "scansion1-5",
@@ -124,6 +125,7 @@ class TestIndex(StaticLiveServerTestCase):
         minuses = self.selenium.find_elements_by_class_name("minus")
         for minus in minuses:
             minus.click()
+            self.selenium.find_element_by_id("original-poem").click()
         submit = self.selenium.find_element_by_id("submit-scansion")
         submit.click()
         alert = self.selenium.switch_to_alert()
@@ -143,6 +145,7 @@ class TestIndex(StaticLiveServerTestCase):
             # through a weird stroke of luck *every single multi-syllable word*
             # in this poem is accented on its first syllable!
             syms[0].click()
+            self.selenium.find_element_by_id("original-poem").click()
         submit = self.selenium.find_element_by_id("submit-scansion")
         submit.click()
         alert = self.selenium.switch_to.alert
@@ -160,6 +163,7 @@ class TestIndex(StaticLiveServerTestCase):
             cell = self.selenium.find_element_by_id(word)
             syms = cell.find_elements_by_class_name("symbol")
             syms[0].click()
+            self.selenium.find_element_by_id("original-poem").click()
         submit = self.selenium.find_element_by_id("submit-scansion")
         submit.click()
         alert = self.selenium.switch_to.alert
