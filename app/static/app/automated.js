@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function reload() {
+  let scansionType = document.getElementById('algorithm').value;
+  const about = document.querySelectorAll('.about-algorithm');
+  if (about) {
+    about.forEach((element) => {
+      element.style.display = 'none'
+    })
+  }
+  document.getElementById(`about-${scansionType}`).style.display = 'inline-block';
   const tables = document.querySelectorAll('table')
   if (tables) {
     tables.forEach((element) => {
@@ -18,7 +26,6 @@ function reload() {
     })
   }
   const poem = document.querySelector('#poem-text').textContent;
-  let scansionType = document.getElementById('algorithm').value;
   let scansion = document.getElementById(`${scansionType}`).textContent;
   // split poem and chosen scansion into lines
   let lines = poem.split(/\r\n|\n|\r/);

@@ -6,7 +6,7 @@
     <div class="container">
         {% csrf_token %}
         <div id="poem-to-scan"></div>
-        <div id="original">
+        <div id="auto-original">
             <div id="original-poem">
                 <p id="poem-id">{{ poem.pk }}</p>
                 <h3>{{ poem.title }}</h3>
@@ -17,13 +17,18 @@
                         <option value="{{ algorithm.function_name }}">{{ algorithm.name }}</option>
                     {% endfor %}
                 </select>
-                <pre id="poem-text" class="item">{{ poem.poem }}</pre>
+                <pre id="poem-text" class="item">{{ poem.poem }}</pre>  
             </div>
             <pre class="scansion-text item">
                 {% for scansion in scansions %}
                     <div id="{{ scansion.type.function_name }}">{{ scansion.scansion }}</div>
                 {% endfor %}
             </pre>
+            <div id="abouts">
+                {% for algorithm in algorithms %}
+                    <div id="about-{{ algorithm.function_name }}"class="about-algorithm">{{ algorithm.about }}</div>
+                {% endfor %}
+            </div>  
         </div>
     </div>
 {% endblock %}

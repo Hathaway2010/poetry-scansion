@@ -178,7 +178,19 @@ pre {
   font-size: 13px;
   font-family: sans-serif;
 }
-
+/* #auto-original {
+  display: flex;
+  flex-direction: column;
+} */
+.about-algorithm {
+  display: none;
+  font-family: sans-serif;
+  max-width: 500px;
+  padding: 10px;
+  margin: 10px;
+  border: 10px solid #380a02;
+  box-shadow: 1px 1px 5px black;
+}
 @media only screen and (max-width: 600px) {
   #login, #register {
     margin: 2.5%;
@@ -214,6 +226,7 @@ pre {
     padding: 5px;
   }
 }
+
 @media only screen and (max-width: 400px) {
   .word {
     font-size: 13px;
