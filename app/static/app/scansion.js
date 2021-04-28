@@ -105,72 +105,40 @@ function removeSyllable(event) {
 // compare new scansion to old
 // if appropriate, submit new scansion via a put request
 function submitScansion() {
-  // get every table containing a line of poetry
-  const lines = document.querySelectorAll('table');
+  // disable submit button so user can't increase score by resubmitting same scansion indefinitely
+  // may eventually want to change it to giving feedback but still not affecting overall score
+  document.querySelector('#submit-scansion').disabled = true;
+
   // get the original poem's scansion from hidden div in html and split it into lines
-  const oldScansion = document.querySelector('#scansion-text').textContent.split(/\r\n|\n|\r/);
+  const oldScansion = splitIntoLines(document.querySelector('#scansion-text').textContent);
   // get word count for scoring later
-  let wordCount = 0;
-  let trimmedOldScansion = []
-  for (let n = 0; n < oldScansion.length; n++) {
-    currentLine = oldScansion[n].trim()
-    trimmedOldScansion.push(currentLine)
-    wordCount += currentLine.split(' ').length;
+  const oldScannedWords = []
+  for (let i = 0; i < oldScansion.length; i++) {
+    oldScannedWords.push(splitIntoWords(oldScansion[i]));
   }
   
-  // let wordCount = document.querySelector('#scansion-text').textContent.split(' ').length;
-  // disable submit button so user can't get points by submitting already-corrected word
-  document.querySelector('#submit-scansion').disabled = true;
-  // create empty string for stress pattern and counter for differences
-  let stressPattern = '';
-  let diffCounter = 0;
-  // loop through lines of table
+  // get every table containing a line of poetry
+  const lines = document.querySelectorAll('table');
+  
+  // get the scansion from that line
+  const newScannedWords = []
   for (let i = 0; i < lines.length; i++) {
-    // get all cells containing words
-    let words = lines[i].querySelectorAll('.word');
-    // split corresponding line of original scansion into words
-    let scannedWords = trimmedOldScansion[i].split(' ');
-    // if table contains words, compare old scansion to new for each word
-    if (words.length != 0) {
-      for (let j = 0; j < words.length; j++) {
-        // get id of each word and find the suffix
-        id = words[j].id;
-        suffix = id.slice(4);
-        // get the scansion with the same suffix
-        scanCell = document.getElementById(`scansion${suffix}`);
-        // https://stackoverflow.com/questions/6967073/javascript-delete-all-occurrences-of-a-char-in-a-string
-        // if the scansions are not the same, mark the cell pale red
-        scansion = scanCell.textContent;
-        if (scansion != scannedWords[j]) {
-          scanCell.style.backgroundColor = '#ffcccc';
-          words[j].style.backgroundColor = '#ffcccc';
-          // increment the difference counter
-          diffCounter++;
-          // if the scasions are the same, mark the cell pale green
-          // log what the difference should be; eventually this may be a tooltip
-          // console.log(`${scansion} should maybe be ${scannedWords[j]}; diffs = ${diffCounter}`)
-        } else {
-          scanCell.style.backgroundColor = '#99ffbb';
-          words[j].style.backgroundColor = '#99ffbb';
-        }
-        // add the new scansion plus a final space to the stress pattern
-        stressPattern += `${scansion} `
-        // if the word is the last in the line, add a newline
-        if (j === words.length - 1)  {
-          stressPattern += '\n'
-        }
-      }
-      // if the line was empty, add a newline
-    } else {
-      stressPattern += '\n'
-    }
+    const newScansion = []
+    const scanCells = lines[i].querySelectorAll('.scansion');
+    scanCells.forEach((cell) => {
+      newScansion.push(cell.textContent)
+    });
+    newScannedWords.push(newScansion);
   }
+  
+  const percentage = scoreScansion(oldScannedWords, newScannedWords);
   // this method from sources cited above the getCoookie function below
   csrftoken = getCookie();
+
   // if the user is promoted, submit the new scansion via a put request
   if (document.querySelector('#promoted') && document.querySelector('#promoted').textContent == 'Promoted: True') {
     poemId = document.getElementById('poem-id').textContent;
-    alert(`New stresses will be recorded, but this will take a moment; disagreements between you and previous scansion (${Math.round(diffCounter * 100 / wordCount)}% of words) will be marked in red, agreements in green.`)
+    alert(`New stresses will be recorded, but this will take a moment; disagreements between you and previous scansion (${percentage}% of words) will be marked in red, agreements in green.`)
     fetch('/', {method: 'PUT', body: JSON.stringify({
       scansion: stressPattern,
       id: poemId
@@ -178,7 +146,6 @@ function submitScansion() {
     })
   // otherwise, calculate a score for the user
   } else {
-    const percentage = Math.round(diffCounter * 100 / wordCount);
     // score defaults to -1, which user will get if they get more than 0.3 of the words wrong.
     let score = -1;
     // if the user got fewer than a tenth of the words wrong, their score goes up by a point
@@ -471,4 +438,59 @@ function renderPlusMinusCell(lineNumber, wordNumber) {
   plusMinusCell.append(minus);
 
   return plusMinusCell
+}
+
+function scoreScansion(oldScansionArr, newScansionArr) {
+  const len = newScansionArr.length
+  
+  if (oldScansionArr.length != len) {
+    console.log("mismatch in line lengths scoring");
+  }
+
+  // get a word count
+  wordCount = 0
+  for (let i = 0; i < len; i++) {
+    wordCount += newScansionArr[i].length;
+  }
+  
+  // let wordCount = document.querySelector('#scansion-text').textContent.split(' ').length;
+ // create counter for differences
+  let diffCounter = 0;
+  // loop through lines of table
+  for (let i = 0; i < len; i++) {
+    lineLen = newScansionArr[i].length
+    if (lineLen > 0) {
+      for (let j = 0; j < lineLen; j++) {
+        // if scansions are not the same, mark the cell pale red and increment the difference counter
+        scanCell = document.getElementById(`scansion${i}-${j}`)
+        wordCell = document.getElementById(`word${i}-${j}`)
+        if (oldScansionArr[i][j] != newScansionArr[i][j]) {
+          scanCell.style.backgroundColor = '#ffcccc';
+          wordCell.style.backgroundColor = '#ffcccc';
+          diffCounter++;
+          // log what the difference should be; eventually this may be a tooltip
+          console.log(`${newScansionArr[i][j]} should maybe be ${oldScansionArr[i][j]}; diffs = ${diffCounter}`);
+          
+          // if the scasions are the same, mark the cell pale green
+        } else {
+          scanCell.style.backgroundColor = '#99ffbb';
+          wordCell.style.backgroundColor = '#99ffbb';
+        }
+      }
+    }
+  }
+  return Math.round(diffCounter * 100 / wordCount)
+}
+
+function makeScansionString(scansionArr) {
+  const len = scansionArr.length;
+  const stressPattern = []
+  for (let i = 0; i < len; i++) {
+    if (scansionArr[i]) {
+      stressPattern.push(scansionArr[i].join(' ') + ' ');
+    } else {
+      stressPattern.push('\n')
+    }
+  }
+  return stressPattern.join('\n')
 }
