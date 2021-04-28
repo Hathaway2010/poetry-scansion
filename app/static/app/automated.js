@@ -47,7 +47,7 @@ function reload() {
       let table = document.createElement('table');
       // identify it by its corresponding line
       table.setAttribute('id', `line${i}`);
-      table.setAttribute('class', 'autoline')
+      table.setAttribute('class', 'autoline');
       // create two rows in the table, one for stress patterns, one for words
       table.innerHTML = `<tr class="stress-pattern"></tr>
                          <tr class="words"></tr>`;

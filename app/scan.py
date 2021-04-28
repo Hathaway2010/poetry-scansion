@@ -8,9 +8,9 @@ disallowed = re.compile("[^A-Za-zé]")
 def get_stats(word, confidence=False):
     # get version of word without non-alphabetic characters and lowercase
     w = re.sub(disallowed, "", word)
-    w = w.lower()
+    w_lower = w.lower()
     # get all pronunciations of the word
-    patterns = Pronunciation.objects.filter(word=w)
+    patterns = Pronunciation.objects.filter(word=w_lower)
     # if there are none, guess the syllable count and return a list of
     # [syllables] question marks to indicate that stress pattern is unknown
     if not patterns.exists():
@@ -202,19 +202,14 @@ def prose_scan(poem):
         poem_scansion.append(line_scansion)
     return "\n".join(poem_scansion)
 
-
-        
-                    
-
 # record stress patterns of words scanned by a promoted user in the database
 def record(poem, scansion):
     # split both poem and scansion on spaces
     words = poem.split()
-    words = [re.sub(disallowed, "", word).lower() for word in words]
+    cleaned_words = [re.sub(disallowed, "", word).lower() for word in words]
     scanned_words = scansion.split()
     # find each word in the database if it is there
-    for i, word in enumerate(words):
-        print(word, scanned_words[i])
+    for i, word in enumerate(cleaned_words):
         w = Pronunciation.objects.filter(word=word)
         # see if any instances of the word have the user-inputted stress pattern
         found = False
@@ -224,12 +219,10 @@ def record(poem, scansion):
                 pron.popularity += 1
                 pron.save()
                 found = True
-                print(f"Found; new popularity: {pron.popularity}")
         # otherwise create a new instance of the word with the correct pronunciation
         if not found:
             new_pron = Pronunciation(word=word, stresses=scanned_words[i], popularity=1)
             new_pron.save()
-            print(f"Not found: created {new_pron}")
 
 # count the syllables in a word if it is not in the database
 def syllables(word):
@@ -239,14 +232,14 @@ def syllables(word):
     silent_final_ed_es = re.compile("[^aeiouydlrt]ed$|[^aeiouycghjlrsxz]es$|thes$|[aeiouylrw]led$|[aeiouylrw]les$|[aeiouyrw]res$|[aeiouyrw]red$")
     lonely = re.compile("[^aeiouy]ely$")
     audible_final_e = re.compile('[^aeiouylrw]le$|[^aeiouywr]re$|[aeioy]e|[^g]ue')
-    word = word.lower()
-    voc = re.findall(vowels_or_clusters, word)
+    word_lower = word.lower()
+    voc = re.findall(vowels_or_clusters, word_lower)
     count = len(voc)
-    if final_e.search(word) and not audible_final_e.search(word):
+    if final_e.search(word_lower) and not audible_final_e.search(word_lower):
         count -= 1
-    if silent_final_ed_es.search(word) or lonely.search(word):
+    if silent_final_ed_es.search(word_lower) or lonely.search(word_lower):
         count -= 1
-    likely_splits = re.findall(vowel_split, word)
+    likely_splits = re.findall(vowel_split, word_lower)
     if likely_splits:
         count += len(likely_splits)
     if count == 0:

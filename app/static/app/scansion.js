@@ -28,18 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
   })
   // split each into lines
   let lines = poem.split(/\r\n|\n|\r/);
-  let scansion_lines = scansion.split(/\r\n|\n|\r/);
+  let scansionLines = scansion.split(/\r\n|\n|\r/);
   // loop through the the lines
   for (let i = 0; i < lines.length; i++) {
     //remove any extra space from beginning and end of lines
-    lines[i] = lines[i].trim()
+    currentLine = lines[i].trim()
     // if the line is not empty, start processing it
-    if (lines[i]) {
+    if (currentLine) {
       // split poem line on spaces (any number, though I've started manually eliminating leading space on poems)
-      let words = lines[i].split(/\s+/);
+      let words = currentLine.split(/\s+/);
       // remove leading and trailing from corresponding line of scansion and split it on spaces
-      scansion_lines[i] = scansion_lines[i].trim()
-      let scanned_words = scansion_lines[i].split(/\s+/);
+      currentScansionLine = scansionLines[i].trim()
+      let scannedWords = currentScansionLine.split(/\s+/);
       // create a table to hold each line
       let table = document.createElement('table');
       // identify it by its corresponding line
@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stress.append(scansion);
 
         // if the scansion has a corresponding "word," add symbols to the cell to represent each syllable
-        if (scanned_words[j]) {
+        if (scannedWords[j]) {
           // loop through each syllable (indicated by a symbol) in the scansion
-          for (let k = 0; k < scanned_words[j].length; k++) {
+          for (let k = 0; k < scannedWords[j].length; k++) {
             // create a span for each syllable and assign it a class of "symbol"
             let symbol = document.createElement('span');
             symbol.setAttribute('class', 'symbol')
@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
   button.textContent = 'Scan Poem'
   button.addEventListener('click', submitScansion);
   document.querySelector('#poem-to-scan').append(button);
-
 })
 // toggle a scansion syllable between stressed and unstressed (human users must
 // commit to one or the other)
@@ -195,12 +194,15 @@ function submitScansion() {
   const lines = document.querySelectorAll('table');
   // get the original poem's scansion from hidden div in html and split it into lines
   const oldScansion = document.querySelector('#scansion-text').textContent.split(/\r\n|\n|\r/);
-  let wordCount = 0;
-  for (let n = 0; n < oldScansion.length; n++) {
-    oldScansion[n] = oldScansion[n].trim()
-    wordCount += oldScansion[n].split(' ').length;
-  }
   // get word count for scoring later
+  let wordCount = 0;
+  let trimmedOldScansion = []
+  for (let n = 0; n < oldScansion.length; n++) {
+    currentLine = oldScansion[n].trim()
+    trimmedOldScansion.push(currentLine)
+    wordCount += currentLine.split(' ').length;
+  }
+  
   // let wordCount = document.querySelector('#scansion-text').textContent.split(' ').length;
   // disable submit button so user can't get points by submitting already-corrected word
   document.querySelector('#submit-scansion').disabled = true;
@@ -212,7 +214,7 @@ function submitScansion() {
     // get all cells containing words
     let words = lines[i].querySelectorAll('.word');
     // split corresponding line of original scansion into words
-    let scannedWords = oldScansion[i].trim().split(' ');
+    let scannedWords = trimmedOldScansion[i].split(' ');
     // if table contains words, compare old scansion to new for each word
     if (words.length != 0) {
       for (let j = 0; j < words.length; j++) {
@@ -225,7 +227,6 @@ function submitScansion() {
         // if the scansions are not the same, mark the cell pale red
         scansion = scanCell.textContent;
         if (scansion != scannedWords[j]) {
-          // console.log(`${scansion} != ${scannedWords[j]}`)
           scanCell.style.backgroundColor = '#ffcccc';
           words[j].style.backgroundColor = '#ffcccc';
           // increment the difference counter
@@ -344,35 +345,35 @@ function showControls(event) {
   })
   shrink();
   // get suffix of word's id and get corresponding scansion and plus-minus cells
-if (event.target.id) {
-    const id = event.target.id;
-    const suffix = id.slice(4);
-    const scan = document.getElementById(`scansion${suffix}`);
-    const pM = document.getElementById(`pm${suffix}`);
-    event.target.style.fontSize = '30px';
-    event.target.style.backgroundColor = 'lemonchiffon';
-    // position those cells above and below the word respectively, guessing at pixel widths of elements
-    // https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
-    // https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
-    // https://stackoverflow.com/questions/38325789/getboundingclientrect-is-inaccurate
-    const rect = event.target.getBoundingClientRect();
-    const sX = (rect.left + rect.right) / 2 - scan.textContent.length * 10;
-    const pMX = (rect.left + rect.right) / 2 - 20;
-    const y = rect.top + window.pageYOffset;
-    const pMY = rect.bottom + window.pageYOffset;
-    scan.style.position = 'absolute';
-    scan.style.left = `${sX}px`
-    scan.style.top = `${y - 20}px`
-    pM.style.position = 'absolute';
-    pM.style.top = `${pMY}px`
-    pM.style.left = `${pMX}px`;
-    pM.style.backgroundColor = 'lemonchiffon';
-    scan.style.display = 'inline';
-    scan.childNodes.forEach((element) => {
-      element.style.display = 'inline';
-    })
-    pM.style.display = 'inline';
-  }
+  if (event.target.id) {
+      const id = event.target.id;
+      const suffix = id.slice(4);
+      const scan = document.getElementById(`scansion${suffix}`);
+      const pM = document.getElementById(`pm${suffix}`);
+      event.target.style.fontSize = '30px';
+      event.target.style.backgroundColor = 'lemonchiffon';
+      // position those cells above and below the word respectively, guessing at pixel widths of elements
+      // https://stackoverflow.com/questions/442404/retrieve-the-position-x-y-of-an-html-element-relative-to-the-browser-window
+      // https://stackoverflow.com/questions/11373741/detecting-by-how-much-user-has-scrolled
+      // https://stackoverflow.com/questions/38325789/getboundingclientrect-is-inaccurate
+      const rect = event.target.getBoundingClientRect();
+      const sX = (rect.left + rect.right) / 2 - scan.textContent.length * 10;
+      const pMX = (rect.left + rect.right) / 2 - 20;
+      const y = rect.top + window.pageYOffset;
+      const pMY = rect.bottom + window.pageYOffset;
+      scan.style.position = 'absolute';
+      scan.style.left = `${sX}px`
+      scan.style.top = `${y - 20}px`
+      pM.style.position = 'absolute';
+      pM.style.top = `${pMY}px`
+      pM.style.left = `${pMX}px`;
+      pM.style.backgroundColor = 'lemonchiffon';
+      scan.style.display = 'inline';
+      scan.childNodes.forEach((element) => {
+        element.style.display = 'inline';
+      })
+      pM.style.display = 'inline';
+    }
 }
 // found and adapted this function from Django documentation (as I'm only accessing one cookie,
 // I figure I don't need to take cookie name as an argument, as the documentation does)
