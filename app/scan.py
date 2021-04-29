@@ -197,6 +197,7 @@ def original_scan(poem):
             else:
                 return "?"
         # check that the line is not blank (that is, a stanza break)
+        
         if line:
             for i, value in enumerate(line):
                 # for each value, if that value is non-numeric, simply add it,
