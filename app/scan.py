@@ -1,3 +1,20 @@
+"""MODULE SCAN
+===============
+This module scans poems and records users' scansions.
+
+Functions
+---------
+
+get_stats(word, confidence=False) : Return ratio to calculate scansion.
+poem_stats(poem) : Use get_stats on whole poem and return nested list.
+original_scan(poem) : Scan by comparing each ratio to the next.
+house_robber_scan(poem) : Scan with solution to house robber problem
+prose_scan(poem) : Scan based on ratios with no comparisons.
+record(poem, scansion) : Record new user scansions in database.
+syllables(word) : Guess syllable count of word not in database.
+"""
+
+
 import re
 from .models import Pronunciation
 from copy import copy
@@ -6,6 +23,25 @@ newline = re.compile("\r\n|\n|\r")
 disallowed = re.compile("[^A-Za-zé]")
 
 def get_stats(word, confidence=False):
+    """Get ratio of stressed scansions to unstressed for word's syllables.
+    
+    Arguments
+    ---------
+    word : str
+        word for which stats need to be looked up
+
+    confidence : bool, default: False
+        whether total number of times scanned should be returned. 
+
+    Returns
+    -------
+    values : list
+        stress ratio for each syllable of the word; 4 decimal places
+        `?` if unknown
+    
+    (values: list, popularity: int) : tuple
+        values as above and number of times word was scanned
+    """
     # get version of word without non-alphabetic characters and lowercase
     w = re.sub(disallowed, "", word)
     w_lower = w.lower()
@@ -73,7 +109,22 @@ def get_stats(word, confidence=False):
             return (values, max_pop)
         return values
 
-def poem_stats(poem):
+def poem_stats(poem, confidence=False):
+    """Find stress ratio for each word in a poem.
+
+    Parameters
+    ----------
+    poem : str
+        poem to scan
+    
+    confidence : boolean
+        whether to return # of times words were scanned
+
+    Returns
+    -------
+    stress_list : list
+        list of lists of stress ratios
+    """
     # split poem into lines
     lines = newline.split(poem)
     stress_list = []
@@ -90,6 +141,18 @@ def poem_stats(poem):
     return stress_list
 
 def original_scan(poem):
+    """Scan poem by comparing each stress ratio to the next.
+    
+    Parameters
+    ----------
+    poem : str
+        poem to scan
+        
+    Return
+    ------
+    poem_scansion : str
+        scansion with lines separated by newlines, words by spaces
+    """
     # get stress ratio for each syllble in each word, separated by spaces,
     # and organized into lines
     stress_list = poem_stats(poem)
@@ -99,6 +162,23 @@ def original_scan(poem):
         line_scansion = ""
         # function to compare two vlues
         def comp(value1, value2):
+            """Assign stress symbol based on ratio comparison.
+
+            Parameters
+            ----------
+            value1 : float
+                value to the left in the line
+            
+            value2 : float
+                value immediately to its right
+            
+            Returns
+            -------
+
+            symbol : str
+                single character indicating stressed (`/`), 
+                unstressed (`u`) or unknown (`?`)
+            """
             # if the second value is unknown, guess the first based on itself alone
             if value2 == "?":
                 if value1 < 0.2:
@@ -142,6 +222,18 @@ def original_scan(poem):
 
 # see https://leetcode.com/problems/house-robber/discuss/156523/From-good-to-great.-How-to-approach-most-of-DP-problems.
 def house_robber_scan(poem):
+    """Scan poem by finding max sum of ratios with no adjacent stresses
+    
+    Parameters
+    ----------
+    poem : str
+        poem to scan
+    
+    Returns
+    -------
+    scansion : str
+        scansion with lines separated by newlines, words by spaces        
+    """
     # get stress pattern of poem
     stress_list = poem_stats(poem)
     poem_scansion = []
@@ -187,6 +279,18 @@ def house_robber_scan(poem):
     return "\n".join(poem_scansion)
 
 def prose_scan(poem):
+    """Scan poem using ratios but not comparing them
+    
+    Parameters
+    ----------
+    poem : str
+        poem to scan
+    
+    Returns
+    -------
+    scansion : str
+        scansion with lines separated by newlines, words by spaces
+    """
     stats = poem_stats(poem)
     poem_scansion = []
     for line in stats:
@@ -204,6 +308,15 @@ def prose_scan(poem):
 
 # record stress patterns of words scanned by a promoted user in the database
 def record(poem, scansion):
+    """Record user scansions of individual words in database
+    
+    Parameters
+    ----------
+    poem : str
+        poem that was scanned
+    scansion : str
+        scansion as string separated with spaces and newlines
+    """
     # split both poem and scansion on spaces
     words = poem.split()
     cleaned_words = [re.sub(disallowed, "", word).lower() for word in words]
@@ -226,6 +339,22 @@ def record(poem, scansion):
 
 # count the syllables in a word if it is not in the database
 def syllables(word):
+    """Guess syllable count of word not in database.
+
+    Parameters
+    ----------
+    word : str
+        word not found in database
+    
+    Returns
+    -------
+    count : int
+        estimated number of syllables
+    
+    See also
+    --------
+    tests/test_scan.py to clarify regular expressions
+    """
     vowels_or_clusters = re.compile("[AEÉIOUaeéiouy]+")
     vowel_split = re.compile("[aiouy]é|ao|eo[^u]|ia[^n]|[^ct]ian|iet|io[^nu]|[^c]iu|[^gq]ua|[^gq]ue[lt]|[^q]uo|[aeiouy]ing|[aeiou]y[aiou]") # exceptions: Preus, Aida, poet, luau
     final_e = re.compile("e$")

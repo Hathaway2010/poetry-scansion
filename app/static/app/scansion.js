@@ -1,29 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-  
-  // return to normal size if something outside a word is clicked on, make the word if it or its controls are clicked on
-  document.querySelector('.container').addEventListener('click', (event) => {
-    grow(event.target);
-  });
-  if (window.innerWidth < 600) {
-    scinstructions = document.getElementById('sctooltip').textContent;
-    alert(scinstructions);
-    pminstructions = document.getElementById('pmtooltip').textContent;
-    alert(pminstructions);
-    document.querySelector('.container').addEventListener('click', (event) => {
-      if (event.target.className == "word") {
-        showControls(event);
-      } else {
-        hideControls()
-      }
-    })
-  }
-  // make dropdown menu work
-  document.querySelector('#go').addEventListener('click', () => {
-    let url = document.querySelector('#go-to-page').value;
-    if (url != 'none') {
-            window.location = url;
-    }
-  })
+  // render poem so users can adjust scansions
+
   // get poem and scansion from the HTML
   const poem = document.querySelector('#poem-text').textContent
   const scansion = document.querySelector('.scansion-text').textContent
@@ -35,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Mismatch in number of lines between poem and scansion');
   };
 
+  // loop through lines and render each line so users can adjust scansions
   for (let i = 0; i < lines.length; i++) {
     if (lines[i]) {
       const words = splitIntoWords(lines[i])
@@ -44,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       document.getElementById('poem-to-scan').append(renderLineInterface(words, scannedWords, i));
     
-    // if the row is empty, insert an empty table for the stanza break
+    // if the line is empty, insert an empty table for the stanza break
     } else {
       table = document.createElement('table');
       table.innerHTML = '<tr></tr><tr></tr>'
@@ -58,8 +36,147 @@ document.addEventListener('DOMContentLoaded', () => {
   button.textContent = 'Scan Poem'
   button.addEventListener('click', submitScansion);
   document.querySelector('#poem-to-scan').append(button);
+
+  // return to normal size if something outside a word is clicked on, make the word if it or its controls are clicked on
+  document.querySelector('.container').addEventListener('click', (event) => {
+    grow(event.target);
+  });
+
+  // turn tooltips into alerts for smaller screens 
+  if (window.innerWidth < 600) {
+    scinstructions = document.getElementById('sctooltip').textContent;
+    alert(scinstructions);
+    pminstructions = document.getElementById('pmtooltip').textContent;
+    alert(pminstructions);
+    document.querySelector('.container').addEventListener('click', (event) => {
+      if (event.target.className == "word") {
+        showControls(event);
+      } else {
+        hideControls()
+      }
+    });
+  }
+  // make dropdown menu work for small screens
+  document.querySelector('#go').addEventListener('click', () => {
+    let url = document.querySelector('#go-to-page').value;
+    if (url != 'none') {
+            window.location = url;
+    }
+  });
 });
 
+function renderLineInterface(words, scansions, lineNumber) {
+  // create a table to hold each line
+  let table = document.createElement('table');
+  // identify it by its corresponding line
+  table.setAttribute('id', `line${lineNumber}`);
+  // append this table to the div intended for the poem to be scanned and assign each row to a variable
+  document.querySelector('#poem-to-scan').append(table);
+  
+  // create and append to the table three rows, one for stress patterns, one for words, and one for buttons to remove or add syllables
+  const stressRow = document.createElement('tr');
+  stressRow.setAttribute('class', 'stress-pattern');
+  table.append(stressRow);
+  const wordRow = document.createElement('tr');
+  wordRow.setAttribute('class', 'words')
+  table.append(wordRow);
+  const plusMinusRow = document.createElement('tr');
+  plusMinusRow.setAttribute('class', 'plus-minus');
+  table.append(plusMinusRow);
+
+  // loop through the words in each line
+  for (let j = 0; j < words.length; j++) {
+    // for each word, create a cell and give it an id indicating where it falls and the purpose it serves
+    stressRow.append(renderScansionCell(scansions[j], lineNumber, j));
+    // next, find the word corresponding to the scansion, create a table cell for it, add it to the cell, and append the cell to the row for words
+    wordRow.append(renderWordCell(words[j], lineNumber, j));
+    // pronunciations change over time and between dialects, and the automated syllable makes mistakes as well; accordingly,
+    // users should be able to add syllables to words or remove them; create a cell for plus and minus buttons, assign it the appropriate id and class, and append it to the third row of the table.
+    plusMinusRow.append(renderPlusMinusCell(lineNumber, j));
+  }
+  return table
+}
+
+function renderScansionCell(scansion, lineNumber, wordNumber) {
+  const scanCell = document.createElement('td');
+  scanCell.setAttribute('id', `scansion${lineNumber}-${wordNumber}`);
+  scanCell.setAttribute('class', 'scansion');
+  // loop through each syllable (indicated by a symbol) in the scansion
+  for (let k = 0; k < scansion.length; k++) {
+    // create a span for each syllable and assign it a class of "symbol"
+    let symbol = document.createElement('span');
+    symbol.setAttribute('class', 'symbol');
+    // if the user is promoted (i.e., has authority to scan previously un-scanned poems), show the previous scasion, symbol by symbol, in the cell above the word
+    if (document.querySelector('#promoted') && document.querySelector('#promoted').textContent == 'Promoted: True') {
+      symbol.textContent = `${scansion[k]}`;
+    // otherwise, show a "u" (symbol of an unstressed syllable) for each syllable
+    } else {
+      symbol.textContent= 'u'
+    }
+    // add an event listener to each symbol that will toggle it between "/" and "u" when it is clicked
+    symbol.addEventListener('click', (event) => {
+      toggle(event);
+    });
+    // append the symbol to the cell
+    scanCell.append(symbol);
+    }
+  if (window.innerWidth >= 600) {
+    scanCell.addEventListener('mouseover', (event) => {
+      showTooltip(event)
+    })
+    scanCell.addEventListener('mouseleave', hideTooltip)
+  }
+  // append this cell to the scansion row
+  return scanCell;
+}
+
+function renderWordCell(word, lineNumber, wordNumber) {
+  const wordCell = document.createElement('td');
+  wordCell.setAttribute('id', `word${lineNumber}-${wordNumber}`);
+  wordCell.setAttribute('class', 'word');
+  wordCell.textContent = word;
+  return wordCell;
+}
+
+function renderPlusMinusCell(lineNumber, wordNumber) {
+  const plusMinusCell = document.createElement('td')
+  plusMinusCell.setAttribute('id', `pm${lineNumber}-${wordNumber}`);
+  plusMinusCell.setAttribute('class', 'pmc')
+  
+  // create a plus button
+  let plus = document.createElement('button');
+  plus.textContent = '+';
+  plus.setAttribute('class', 'plus pm');
+  
+  // that when clicked calls a function that adds a syllable to the word
+  plus.addEventListener('click', (event) => {
+    addSyllable(event);
+  });
+
+  plusMinusCell.append(plus);
+  
+  // create a minus button
+  let minus = document.createElement('button');
+  minus.textContent = '-';
+  minus.setAttribute('class', 'minus pm');
+
+  // that when clicked calls a function that removes a syllable from the word
+  minus.addEventListener('click', (event) => {
+    removeSyllable(event);
+  });
+
+  // show tooltips if the screen is large enough
+  if (window.innerWidth >= 600) {
+    plusMinusCell.addEventListener('mouseover', (event) => {
+      showTooltip(event);
+    })
+    plusMinusCell.addEventListener('mouseleave', hideTooltip);
+  }
+
+  plusMinusCell.append(minus);
+
+  return plusMinusCell
+}
 
 // function to toggle a scansion syllable between stressed and unstressed (human users must
 // commit to one or the other)
@@ -88,7 +205,6 @@ function addSyllable(event) {
   place.append(symbol);
 }
 
-
 // function to remove a syllable from a word
 function removeSyllable(event) {
   let id = event.target.parentNode.id;
@@ -102,8 +218,7 @@ function removeSyllable(event) {
   }
 }
 
-// compare new scansion to old
-// if appropriate, submit new scansion via a put request
+// function to submit new scansion or new score via a PUT request if user is logged in
 function submitScansion() {
   // disable submit button so user can't increase score by resubmitting same scansion indefinitely
   // may eventually want to change it to giving feedback but still not affecting overall score
@@ -111,27 +226,29 @@ function submitScansion() {
 
   // get the original poem's scansion from hidden div in html and split it into lines
   const oldScansion = splitIntoLines(document.querySelector('#scansion-text').textContent);
-  // get word count for scoring later
+  
+  // make nested array for old scansion (an array of lines, each of which is an array of words); get word count for scoring later
   const oldScannedWords = []
   for (let i = 0; i < oldScansion.length; i++) {
     oldScannedWords.push(splitIntoWords(oldScansion[i]));
   }
   
-  // get every table containing a line of poetry
+  // get every table (i.e., every line of poetry or stanza-break line)
   const lines = document.querySelectorAll('table');
   
-  // get the scansion from that line
+  // get the scansion from that line and create nested array a la oldScannedWords
   const newScannedWords = []
   for (let i = 0; i < lines.length; i++) {
-    const newScansion = []
+    const newScansion = [];
     const scanCells = lines[i].querySelectorAll('.scansion');
     scanCells.forEach((cell) => {
-      newScansion.push(cell.textContent)
+      newScansion.push(cell.textContent);
     });
     newScannedWords.push(newScansion);
   }
-  
+  // get rounded percentage of words scanned differently
   const percentage = scoreScansion(oldScannedWords, newScannedWords);
+  
   // this method from sources cited above the getCoookie function below
   csrftoken = getCookie();
 
@@ -327,118 +444,6 @@ function splitIntoWords(line) {
   return line.trim().split(/\s+/)
 }
 
-function renderLineInterface(words, scansions, lineNumber) {
-  // create a table to hold each line
-  let table = document.createElement('table');
-  // identify it by its corresponding line
-  table.setAttribute('id', `line${lineNumber}`);
-  // append this table to the div intended for the poem to be scanned and assign each row to a variable
-  document.querySelector('#poem-to-scan').append(table);
-  
-  // create and append to the table three rows, one for stress patterns, one for words, and one for buttons to remove or add syllables
-  const stressRow = document.createElement('tr');
-  stressRow.setAttribute('class', 'stress-pattern');
-  table.append(stressRow);
-  const wordRow = document.createElement('tr');
-  wordRow.setAttribute('class', 'words')
-  table.append(wordRow);
-  const plusMinusRow = document.createElement('tr');
-  plusMinusRow.setAttribute('class', 'plus-minus');
-  table.append(plusMinusRow);
-
-  // loop through the words in each line
-  for (let j = 0; j < words.length; j++) {
-    // for each word, create a cell and give it an id indicating where it falls and the purpose it serves
-    stressRow.append(renderScansionCell(scansions[j], lineNumber, j));
-    // next, find the word corresponding to the scansion, create a table cell for it, add it to the cell, and append the cell to the row for words
-    wordRow.append(renderWordCell(words[j], lineNumber, j));
-    // pronunciations change over time and between dialects, and the automated syllable makes mistakes as well; accordingly,
-    // users should be able to add syllables to words or remove them; create a cell for plus and minus buttons, assign it the appropriate id and class, and append it to the third row of the table.
-    plusMinusRow.append(renderPlusMinusCell(lineNumber, j));
-  }
-  return table
-}
-
-function renderScansionCell(scansion, lineNumber, wordNumber) {
-  const scanCell = document.createElement('td');
-  scanCell.setAttribute('id', `scansion${lineNumber}-${wordNumber}`);
-  scanCell.setAttribute('class', 'scansion');
-  // loop through each syllable (indicated by a symbol) in the scansion
-  for (let k = 0; k < scansion.length; k++) {
-    // create a span for each syllable and assign it a class of "symbol"
-    let symbol = document.createElement('span');
-    symbol.setAttribute('class', 'symbol');
-    // if the user is promoted (i.e., has authority to scan previously un-scanned poems), show the previous scasion, symbol by symbol, in the cell above the word
-    if (document.querySelector('#promoted') && document.querySelector('#promoted').textContent == 'Promoted: True') {
-      symbol.textContent = `${scansion[k]}`;
-    // otherwise, show a "u" (symbol of an unstressed syllable) for each syllable
-    } else {
-      symbol.textContent= 'u'
-    }
-    // add an event listener to each symbol that will toggle it between "/" and "u" when it is clicked
-    symbol.addEventListener('click', (event) => {
-      toggle(event);
-    });
-    // append the symbol to the cell
-    scanCell.append(symbol);
-    }
-  if (window.innerWidth >= 600) {
-    scanCell.addEventListener('mouseover', (event) => {
-      showTooltip(event)
-    })
-    scanCell.addEventListener('mouseleave', hideTooltip)
-  }
-  // append this cell to the scansion row
-  return scanCell;
-}
-
-function renderWordCell(word, lineNumber, wordNumber) {
-  const wordCell = document.createElement('td');
-  wordCell.setAttribute('id', `word${lineNumber}-${wordNumber}`);
-  wordCell.setAttribute('class', 'word');
-  wordCell.textContent = word;
-  return wordCell;
-}
-
-function renderPlusMinusCell(lineNumber, wordNumber) {
-  const plusMinusCell = document.createElement('td')
-  plusMinusCell.setAttribute('id', `pm${lineNumber}-${wordNumber}`);
-  plusMinusCell.setAttribute('class', 'pmc')
-  
-  // create a plus button
-  let plus = document.createElement('button');
-  plus.textContent = '+';
-  plus.setAttribute('class', 'plus pm');
-  
-  // that when clicked calls a function that adds a syllable to the word
-  plus.addEventListener('click', (event) => {
-    addSyllable(event);
-  });
-
-  plusMinusCell.append(plus);
-  
-  // create a minus button
-  let minus = document.createElement('button');
-  minus.textContent = '-';
-  minus.setAttribute('class', 'minus pm');
-
-  // that when clicked calls a function that removes a syllable from the word
-  minus.addEventListener('click', (event) => {
-    removeSyllable(event);
-  });
-
-  // show tooltips if the screen is large enough
-  if (window.innerWidth >= 600) {
-    plusMinusCell.addEventListener('mouseover', (event) => {
-      showTooltip(event);
-    })
-    plusMinusCell.addEventListener('mouseleave', hideTooltip);
-  }
-
-  plusMinusCell.append(minus);
-
-  return plusMinusCell
-}
 
 function scoreScansion(oldScansionArr, newScansionArr) {
   const len = newScansionArr.length
@@ -482,6 +487,7 @@ function scoreScansion(oldScansionArr, newScansionArr) {
   return Math.round(diffCounter * 100 / wordCount)
 }
 
+// function to turn nested list of stresses into scansion string to be stored in database 
 function makeScansionString(scansionArr) {
   const len = scansionArr.length;
   const stressPattern = []
